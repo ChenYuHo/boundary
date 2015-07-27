@@ -9,38 +9,38 @@ function fxy=direction(dirx,diry,A)
 	elseif x>0 && y>0
 		arc = 90-atan(x/y)*180/pi;
 		if arc<22.5
-			fxy=[1;0]
+			fxy=[0;1];
 		elseif arc>=22.5 && arc<=67.5
-			fxy=[1;1]
+			fxy=[1;1];
 		else
-			fxy=[0;1]
+			fxy=[1;0];
 		end
 	elseif x>0 && y<0
 		arc = 90+atan(x/y)*180/pi;
 		if arc<22.5
-			fxy=[1;0]
+			fxy=[0;1];
 		elseif arc>=22.5 && arc<=67.5
-			fxy=[1;-1]
+			fxy=[-1;1];
 		else
-			fxy=[0;-1]
+			fxy=[-1;0];
 		end
 	elseif x<0 && y>0
 		arc = 90+atan(x/y)*180/pi;
 		if arc<22.5
-			fxy=[-1;0]
+			fxy=[0;-1];
 		elseif arc>=22.5 && arc<=67.5
-			fxy=[-1;1]
+			fxy=[1;-1];
 		else
-			fxy=[0;1]
+			fxy=[1;0];
 		end
 	else
 		arc = 90-atan(x/y)*180/pi;
 		if arc<22.5
-			fxy=[-1;0]
+			fxy=[0;-1];
 		elseif arc>=22.5 && arc<=67.5
-			fxy=[-1;-1]
+			fxy=[-1;-1];
 		else
-			fxy=[0;-1]
+			fxy=[-1;0];
 		end
 	end
 end
