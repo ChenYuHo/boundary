@@ -1,4 +1,4 @@
-function nvpp(filename,name,r,sigma,alpha,beta)
+function nvpp(filename,name,r,sigma,alpha,beta,edge)
 	% this program uses simulation of particle motion in vector image field to
 	% portrait the boundary of objects in input image
 	% INPUT
@@ -8,6 +8,7 @@ function nvpp(filename,name,r,sigma,alpha,beta)
 	%	sigma: spread constant of gaussian weighted image moment vector
 	%	alpha: tangential stepping factor (-1 <= alpha <= 1, alpha != 0)
 	%	beta: normal stepping factor (0 < beta <= 1)
+	%	edge: the dropping percent (0 < edge < 100), will drop the point if the intensity of which is smaller than specified percent
 tic;	%record process time
 	img=imread(filename);
 	array=double(img);
@@ -20,25 +21,21 @@ tic;	%record process time
 	combine = zeros(m,n,2);
 	combine(:,:,1) = (gwimv(:,:,1).*alpha) + (nvp(:,:,1).*beta);
 	combine(:,:,2) = (gwimv(:,:,2).*alpha) + (nvp(:,:,2).*beta);
-	[~,pos]=sort(eabs(:), 'descend');						%sort edge strength as initial points
+	[~,pos]=sort(eabs(:), 'descend');						%sort edge strength for choosing initial points
 	record=false(m,n);
-	pos_size=size(pos);
 	imshow(img);	 
 	hold on
-	reason='normal';
 	A=[1;1];
-	es=0.1;
-	esr=1;
-	[~,X]=hist(eabs, 3);
+	[~,X]=hist(eabs, 100/edge);
 	limit=X(1);
-	for count=1:1:pos_size							%pick starting point
+	for count=1:1:size(pos)									%pick starting point
         col=ceil(pos(count)/m);								%convert to x,y coordinate
 	    row=mod(pos(count),m);
 	    if row==0
 	    	row=m;
 	    end
 	    if eabs(row,col)<limit
-	    	continue
+	    	break
 	    end
 	    if record(row,col)
 	    	continue
@@ -76,7 +73,7 @@ e=toc;
 	fprintf('done processing, %g seconds used\n', e);
  	fileType = 'tif';
 	imageFolder = 'O:\desktop\Boundary\result\';
-    filenameIntactHist = [imageFolder name '_' num2str(sigma) '_' num2str(alpha) '_' num2str(beta) '_' num2str(e) '.' fileType];
+    filenameIntactHist = [imageFolder name '_' num2str(sigma) '_' num2str(alpha) '_' num2str(beta) '_' num2str(edge) '_' num2str(e) '.' fileType];
     % Save the current figure.
 	saveas(gcf, filenameIntactHist, fileType);
 	% Close the figure.
