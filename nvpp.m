@@ -1,4 +1,4 @@
-function nvpp(filename,name,r,sigma,alpha,beta,edge)
+function nvpp(filename,name,r,sigma,alpha,beta,edge,jumpCount)
 	% this program uses simulation of particle motion in vector image field to
 	% portrait the boundary of objects in input image
 	% INPUT
@@ -28,6 +28,7 @@ tic;	%record process time
 	% figure('Visible', 'on');
 	imshow(img);	 
 	hold on
+	quiver(combine(:,:,1), combine(:,:,2));
 	A=[1;1];
 	[~,X]=hist(eabs, 1000);
 	limit=X(edge*10);
@@ -61,21 +62,24 @@ tic;	%record process time
 	            if eabs(B(1), B(2)) < limit
 	            	found=false;
 	            	for index=1:1:jumpCount
+	            		% fprintf('%d\n', index);
 						[nextPoint, found]=checkLimit(eabs, B, move, limit);
+						% fprintf('%d\n', found);
 						if found
 							break
+						else
+							B=B+move;
 						end
 					end
 	            	% [point, next] = findNext(eabs, B, move, limit, count); 
 	            	if found
 	            		record(nextPoint(1), nextPoint(2)) = true;
-	            		A=nextPoint;
-	            		continue
+	            		B=nextPoint;
 	            	else
 	            		break
 	            	end
 	            end
-	            line([A(2), B(2)],[A(1),B(1)],'Color','g','LineWidth',1);
+	            line([A(2), B(2)],[A(1),B(1)],'Color','r','LineWidth',2);
 	            if record(B(1), B(2))
 	            	% disp('break')
 	            	break
