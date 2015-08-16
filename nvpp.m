@@ -28,7 +28,7 @@ tic;	%record process time
 	% figure('Visible', 'on');
 	imshow(img);	 
 	hold on
-	quiver(combine(:,:,1), combine(:,:,2));
+	% quiver(combine(:,:,1), combine(:,:,2));
 	A=[1;1];
 	[~,X]=hist(eabs, 1000);
 	limit=X(edge*10);
@@ -60,15 +60,16 @@ tic;	%record process time
 		    	move = direction(combine(:,:,1), combine(:,:,2), A);
 		    	B=A+move;
 	            if eabs(B(1), B(2)) < limit
+	            	move = Ftest(combine(:,:,1), combine(:,:,2), A);
+	            	% move = (move ./ sqrt(move(1)^2+move(2)^2)) ./ 3 ;
 	            	found=false;
 	            	for index=1:1:jumpCount
-	            		% fprintf('%d\n', index);
 						[nextPoint, found]=checkLimit(eabs, B, move, limit);
 						% fprintf('%d\n', found);
 						if found
 							break
 						else
-							B=B+move;
+							B=nextPoint;
 						end
 					end
 	            	% [point, next] = findNext(eabs, B, move, limit, count); 
