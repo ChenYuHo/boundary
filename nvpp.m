@@ -59,7 +59,21 @@ tic;	%record process time
 		    	move = direction(combine(:,:,1), combine(:,:,2), A);
 		    	B=A+move;
 	            if eabs(B(1), B(2)) < limit
-	            	break
+	            	found=false;
+	            	for index=1:1:jumpCount
+						[nextPoint, found]=checkLimit(eabs, B, move, limit);
+						if found
+							break
+						end
+					end
+	            	% [point, next] = findNext(eabs, B, move, limit, count); 
+	            	if found
+	            		record(nextPoint(1), nextPoint(2)) = true;
+	            		A=nextPoint;
+	            		continue
+	            	else
+	            		break
+	            	end
 	            end
 	            line([A(2), B(2)],[A(1),B(1)],'Color','g','LineWidth',1);
 	            if record(B(1), B(2))
