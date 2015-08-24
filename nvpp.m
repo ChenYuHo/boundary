@@ -21,7 +21,7 @@ tic;	%record process time
 	combine = zeros(m,n,2);
 	combine(:,:,1) = (gwimv(:,:,1).*alpha) + (nvp(:,:,1).*beta);
 	combine(:,:,2) = (gwimv(:,:,2).*alpha) + (nvp(:,:,2).*beta);
-	localmax= eabs > imdilate(eabs, [1 1 1; 1 0 1; 1 1 1]);
+	% localmax= eabs > imdilate(eabs, [1 1 1; 1 0 1; 1 1 1]);
 	[~,pos]=sort(eabs(:), 'descend');						%sort edge strength for choosing initial points
 	record=false(m,n);
 	% figure('Visible','off');
@@ -63,15 +63,16 @@ tic;	%record process time
 	            	move = Ftest(combine(:,:,1), combine(:,:,2), A);
 	            	% move = (move ./ sqrt(move(1)^2+move(2)^2)) ./ 3 ;
 	            	found=false;
-	            	for index=1:1:jumpCount
-						[nextPoint, found]=checkLimit(eabs, B, move, limit);
-						% fprintf('%d\n', found);
-						if found
-							break
-						else
-							B=nextPoint;
+	            	index=0;
+	            	while(index<jumpCount)
+							[nextPoint, found]=checkLimit(eabs, B, move, limit);
+							index=index+1;
+							if found
+								break
+							else
+								B=nextPoint;
+							end
 						end
-					end
 	            	% [point, next] = findNext(eabs, B, move, limit, count); 
 	            	if found
 	            		record(nextPoint(1), nextPoint(2)) = true;
@@ -112,55 +113,54 @@ end	%function
 	% % [grax,gray]=gradient(array);
 	% % nvpx= grax.*(nvx+nvy)./c;								%Normalized Laplacian-gradient vector field
 	% % nvpy= gray.*(nvx+nvy)./c;
-
-	% % eabs=sqrt((gwimv(:,:,1)).^2+(gwimv(:,:,2)).^2);			%edge strength
-	
-	% % localmax= gra > imdilate(gra, [1 1 1; 1 0 1; 1 1 1]);   %specify if (x,y) is local maximum
-	% % localmax= eabs > imdilate(eabs, [1 1 1; 1 0 1; 1 1 1]);
-	% % numoflocalmax = sum(localmax(:));						%amount of local maximum
-	% % display(numoflocalmax);
-	% % localmaxcount=0;
-	% % [~,pos]=sort(gra(:), 'descend');						%sort gradient
-	% [~,pos]=sort(eabs(:), 'descend');						%sort edge strength as initial points
-	% record=false(m,n);
-	% pos_size=size(pos);
-	% imshow(eabs);
-	% hold on
-	% % quiver(nvp(:,:,1),nvp(:,:,2));
-	% % quiver(gwimv(:,:,1), gwimv(:,:,2));
-	% quiver(combine(:,:,1), combine(:,:,2));
-	% % imshow(eabs, [min(eabs(:)),max(eabs(:))]);
-	% reason='normal';
-	% A=[1;1];
-	% es=0.1;
-	% esr=1;
-	% [~,X]=hist(eabs, 2);
-	% limit=X(1);
-	% pickcount = 0;
-	% % for count=1:1:pos_size*0.01								%pick starting point
-	% for count=1:1:0
-	% 	% if localmaxcount==numoflocalmax
- %  %   		reason='end';
-	%  %    	break
-	%  %    end
-	%  	% if pickcount == 20
-	%  	% 	break
-	%  	% end
- %        col=ceil(pos(count)/m);								%convert to x,y coordinate
-	%     row=mod(pos(count),m);
-	%     if row==0
-	%     	row=m;
-	%     end
-	%     if eabs(row,col)<limit
-	%     	continue
-	%     end
-	%     % if ~localmax(row,col)
-	%     % 	continue
-	%     % else
-	%     % 	localmaxcount=localmaxcount+1;
-	%     % end
-	%     if ~isLocalKing(eabs, row, col, esr, es)
-	%  %    % if ~isLocalKing(gra, row, col, esr, es)
-	% 		% continue
-	% 	% else
-	% 	% 	plot(col,row,'dg');
+   % % eabs=sqrt((gwimv(:,:,1)).^2+(gwimv(:,:,2)).^2);         %edge strength
+   
+   % % localmax= gra > imdilate(gra, [1 1 1; 1 0 1; 1 1 1]);   %specify if (x,y) is local maximum
+   % % localmax= eabs > imdilate(eabs, [1 1 1; 1 0 1; 1 1 1]);
+   % % numoflocalmax = sum(localmax(:));                       %amount of local maximum
+   % % display(numoflocalmax);
+   % % localmaxcount=0;
+   % % [~,pos]=sort(gra(:), 'descend');                        %sort gradient
+   % [~,pos]=sort(eabs(:), 'descend');                     %sort edge strength as initial points
+   % record=false(m,n);
+   % pos_size=size(pos);
+   % imshow(eabs);
+   % hold on
+   % % quiver(nvp(:,:,1),nvp(:,:,2));
+   % % quiver(gwimv(:,:,1), gwimv(:,:,2));
+   % quiver(combine(:,:,1), combine(:,:,2));
+   % % imshow(eabs, [min(eabs(:)),max(eabs(:))]);
+   % reason='normal';
+   % A=[1;1];
+   % es=0.1;
+   % esr=1;
+   % [~,X]=hist(eabs, 2);
+   % limit=X(1);
+   % pickcount = 0;
+   % % for count=1:1:pos_size*0.01                             %pick starting point
+   % for count=1:1:0
+   %   % if localmaxcount==numoflocalmax
+ %  %           reason='end';
+   %  %        break
+   %  %    end
+   %   % if pickcount == 20
+   %   %   break
+   %   % end
+ %        col=ceil(pos(count)/m);                               %convert to x,y coordinate
+   %     row=mod(pos(count),m);
+   %     if row==0
+   %       row=m;
+   %     end
+   %     if eabs(row,col)<limit
+   %       continue
+   %     end
+   %     % if ~localmax(row,col)
+   %     %     continue
+   %     % else
+   %     %     localmaxcount=localmaxcount+1;
+   %     % end
+   %     if ~isLocalKing(eabs, row, col, esr, es)
+   %  %    % if ~isLocalKing(gra, row, col, esr, es)
+   %       % continue
+   %   % else
+   %   %   plot(col,row,'dg');
