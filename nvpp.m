@@ -61,7 +61,7 @@ tic;	%record process time
 		    	move = direction(combine(:,:,1), combine(:,:,2), A);
 		    	B=A+move;
 	            if eabs(B(1), B(2)) < limit
-	            	tempStash = [];
+	            	tempStash = [B];
 	            	move = Ftest(combine(:,:,1), combine(:,:,2), A);
 	            	% move = (move ./ sqrt(move(1)^2+move(2)^2)) ./ 3 ;
 	            	found=false;
@@ -69,25 +69,22 @@ tic;	%record process time
 	            	while(index<jumpCount)
 							[nextPoint, found]=checkLimit(eabs, B, move, limit);
 							index=index+1;
+							B=nextPoint;
 							if found
-								% tempStash = [tempStash ; nextPoint];
 								break
-							else
-								tempStash = [tempStash , nextPoint];
-								B=nextPoint;
 							end
+							tempStash = [tempStash , nextPoint];
 						end
 	            	% [point, next] = findNext(eabs, B, move, limit, count); 
 	            	if found
 	            		stash = [stash , tempStash];
 	            		% record(nextPoint(1), nextPoint(2)) = true;
-	            		B=nextPoint;
 	            	else
 	            		break
 	            	end
 	            end
 	            stash = [stash , B];
-	            setTrue(stash, record);
+	            [stash, record] = setTrue(stash, record);
 	            if record(B(1), B(2))
 	            	% disp('break')
 	            	break

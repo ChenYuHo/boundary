@@ -1,4 +1,4 @@
-function setTrue(stash, record)
+function [stashr, recordr] = setTrue(stash, record)
    points = size(stash,2);
    while(points >= 3)
       point = stash(:,1);
@@ -18,4 +18,6 @@ function setTrue(stash, record)
       stash = stash(:,2:points);
       points=points-1;
    end
+   stashr = stash;
+   recordr = record;
 end
